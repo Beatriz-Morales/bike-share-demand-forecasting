@@ -1,0 +1,87 @@
+---
+title: "A06 Regression, Part 01 - Bikeshare"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+```{r}
+bikeshare <- read.csv("/Users/beatrizmorales/Downloads/bikeshare.csv", stringsAsFactors = TRUE)
+bikeshare
+```
+Question 1
+```{r}
+##Histogram
+hist(bikeshare$cnt, breaks = 40, main = "Distribution of Bike Rentals", xlab = "Rentals")
+mean(bikeshare$cnt,na.rm = TRUE)
+median(bikeshare$cnt, na.rm = TRUE)
+```
+Question: 2
+```{r}
+bikeshare <- read.csv("bikeshare.csv", stringsAsFactors = FALSE)
+bikeshare$cnt <- as.numeric(bikeshare$cnt)
+bikeshare$weathersit <- factor(
+  bikeshare$weathersit,
+  levels = c(1, 2, 3, 4),
+  labels = c("Clear", "Mist/Clouds", "Light rain/snow", "Heavy precip")
+)
+par(mar = c(5, 5, 3, 1))
+boxplot(cnt ~ weathersit, data = bikeshare, notch = TRUE,
+        ylab = "Bike rentals (cnt)",
+        xlab = "Weather situation",
+        main = "Bike Rentals by Weather")
+```
+Question 3,4,5, & 6
+```{r}
+bikeshare <- read.csv("bikeshare.csv", stringsAsFactors = FALSE)
+bikeshare$cnt <- as.numeric(bikeshare$cnt)
+bikeshare$weathersit <- factor(
+  bikeshare$weathersit,
+  levels = c(1, 2, 3, 4),
+  labels = c("Clear", "Mist/Clouds", "Light rain/snow", "Heavy precip")
+)
+bikeshare <- subset(bikeshare, !is.na(cnt) & !is.na(weathersit))
+bikeshare$weathersit <- droplevels(bikeshare$weathersit)
+
+print(levels(bikeshare$weathersit))
+stopifnot(nlevels(bikeshare$weathersit) >= 2)
+if (!"Clear" %in% levels(bikeshare$weathersit)) {
+  bikeshare$weathersit <- relevel(bikeshare$weathersit, ref = levels(bikeshare$weathersit)[1])
+} else {
+  bikeshare$weathersit <- relevel(bikeshare$weathersit, ref = "Clear")
+}
+
+fit <- lm(cnt ~ weathersit, data = bikeshare)
+summary(fit)
+
+#Question 3
+if ("Light rain/snow" %in% names(coef(fit))) {
+  beta_wet <- coef(fit)[["Light rain/snow"]]
+} else if ("weathersitLight rain/snow" %in% names(coef(fit))) {
+  beta_wet <- coef(fit)[["weathersitLight rain/snow"]]
+} else {
+  beta_wet <- NA_real_  
+}
+
+beta_wet                    
+beta_wet > 0                  
+
+#Question 4
+sse <- sum(residuals(fit)^2); sse
+
+#Question 5
+round(summary(fit)$r.squared, 2)
+
+#Question 6
+round(summary(fit)$sigma, 0)
+                                            
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
