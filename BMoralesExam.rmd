@@ -1,0 +1,306 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+###Question 1: Do not log, it is a level-level and report in units not %.
+```{r}
+df <- read.csv("~/Downloads/bikeshare (3).csv")
+str(df[, c("cnt","weathersit","temp","hum","windspeed")])
+summary(df[, c("cnt","weathersit","temp","hum","windspeed")])
+df$weathersit <- factor(df$weathersit)
+levels(df$weathersit)
+fit <- lm(cnt ~ weathersit + temp + hum + windspeed, data = df)
+summary(fit)
+
+beta_temp <- coef(fit)["temp"]
+degC_per_unit <- 41
+delta_temp_norm <- 10 / degC_per_unit
+
+change_per_10C <- as.numeric(beta_temp * delta_temp_norm)
+answer_1_decimal <- round(change_per_10C, 1)
+
+beta_temp
+delta_temp_norm
+change_per_10C
+answer_1_decimal
+```
+
+```{r}
+df <- read.csv("~/Downloads/bikeshare (3).csv")
+str(df[, c("cnt","weathersit","temp","hum","windspeed")])
+summary(df[, c("cnt","weathersit","temp","hum","windspeed")])
+df$weathersit <- factor(df$weathersit)
+levels(df$weathersit)
+fit <- lm(cnt ~ weathersit * (temp + hum + windspeed), data = df)
+summary(fit)
+
+beta_temp_clear <- coef(fit)["temp"]
+delta_temp_norm <- 10 / 41
+
+change_per_10C_clear <- as.numeric(beta_temp_clear * delta_temp_norm)
+answer_3_decimals <- round(change_per_10C_clear, 3)
+
+beta_temp_clear
+delta_temp_norm
+answer_3_decimals
+```
+
+```{r}
+df <- read.csv("~/Downloads/bikeshare (3).csv")
+str(df[, c("cnt","weathersit","temp","hum","windspeed")])
+summary(df[, c("cnt","weathersit","temp","hum","windspeed")])
+df$weathersit <- factor(df$weathersit)
+levels(df$weathersit)
+fit <- lm(cnt ~ weathersit * (temp + hum + windspeed), data = df)
+summary(fit)
+
+coefs <- coef(fit)
+
+beta_temp_clear <- coefs[["temp"]]
+beta_temp_ws2_inter <- unname(coefs[grep("weathersit2:temp|temp:weathersit2", names(coefs))])
+beta_temp_cloudy <- beta_temp_clear + beta_temp_ws2_inter
+delta_temp_norm <- 10 / 41
+change_per_10C_cloudy <- as.numeric(beta_temp_cloudy * delta_temp_norm)
+answer_3dp <- round(change_per_10C_cloudy, 3)
+
+beta_temp_clear
+beta_temp_ws2_inter
+beta_temp_cloudy
+answer_3dp
+```
+
+```{r}
+df <- read.csv("~/Downloads/bikeshare (3).csv")
+str(df[, c("cnt","weathersit","temp","hum","windspeed")])
+summary(df[, c("cnt","weathersit","temp","hum","windspeed")])
+df$weathersit <- factor(df$weathersit)
+levels(df$weathersit)
+fit <- lm(cnt ~ weathersit * (temp + hum + windspeed), data = df)
+summary(fit)
+
+coefs <- coef(fit)
+beta_temp_clear <- coefs[["temp"]]
+beta_temp_ws3_inter <- unname(coefs[grep("weathersit3:temp|temp:weathersit3", names(coefs))])
+beta_temp_wet <- beta_temp_clear + beta_temp_ws3_inter
+delta_temp_norm <- 10 / 41
+
+change_per_10C_wet <- as.numeric(beta_temp_wet * delta_temp_norm)
+answer_3dp <- round(change_per_10C_wet, 3)
+
+beta_temp_clear
+beta_temp_ws3_inter
+beta_temp_wet
+answer_3dp
+```
+
+```{r}
+df <- read.csv("~/Downloads/bikeshare (3).csv")
+str(df[, c("cnt","weathersit","temp","hum","windspeed")])
+summary(df[, c("cnt","weathersit","temp","hum","windspeed")])
+df$weathersit <- factor(df$weathersit)
+levels(df$weathersit)
+df$log_cnt <- log(df$cnt)
+summary(df$log_cnt)
+fit <- lm(log_cnt ~ weathersit * (temp + hum + windspeed), data = df)
+summary(fit)
+
+b_temp_clear <- coef(fit)["temp"]
+delta_temp_norm <- 10 / 41
+mult_effect_clear <- exp(b_temp_clear * delta_temp_norm)
+answer_4dp <- round(mult_effect_clear, 4)
+
+b_temp_clear
+delta_temp_norm
+answer_4dp
+```
+
+```{r}
+df <- read.csv("~/Downloads/bikeshare (3).csv")
+str(df[, c("cnt","weathersit","temp","hum","windspeed")])
+summary(df[, c("cnt","weathersit","temp","hum","windspeed")])
+df$weathersit <- factor(df$weathersit)
+levels(df$weathersit)
+df$log_cnt <- log(df$cnt)
+summary(df$log_cnt)
+fit <- lm(log_cnt ~ weathersit * (temp + hum + windspeed), data = df)
+summary(fit)
+
+coefs <- coef(fit)
+
+b_temp_clear   <- coefs[["temp"]]
+b_temp_ws2_int <- unname(coefs[grep("weathersit2:temp|temp:weathersit2", names(coefs))])
+b_temp_cloudy <- b_temp_clear + b_temp_ws2_int
+delta_temp_norm <- 10 / 41
+mult_cloudy <- exp(b_temp_cloudy * delta_temp_norm)
+answer_4dp <- round(mult_cloudy, 4)
+b_temp_clear
+b_temp_ws2_int
+b_temp_cloudy
+answer_4dp
+```
+
+```{r}
+df <- read.csv("~/Downloads/bikeshare (3).csv")
+str(df[, c("cnt","weathersit","temp","hum","windspeed")])
+summary(df[, c("cnt","weathersit","temp","hum","windspeed","cnt")])
+df$weathersit <- factor(df$weathersit)
+levels(df$weathersit)  
+df$log_cnt <- log(df$cnt)
+summary(df$log_cnt)
+fit <- lm(log_cnt ~ weathersit * (temp + hum + windspeed), data = df)
+summary(fit)
+
+coefs <- coef(fit)
+
+b_temp_clear   <- coefs[["temp"]]
+b_temp_ws3_int <- unname(coefs[grep("weathersit3:temp|temp:weathersit3", names(coefs))])
+b_temp_wet <- b_temp_clear + b_temp_ws3_int
+delta_temp_norm <- 10 / 41
+mult_wet <- exp(b_temp_wet * delta_temp_norm)
+answer_4dp <- round(mult_wet, 4)
+b_temp_clear
+b_temp_ws3_int
+b_temp_wet
+answer_4dp
+```
+
+```{r}
+df <- read.csv("~/Downloads/bikeshare (3).csv")
+str(df[, c("cnt","weathersit","temp","hum","windspeed")])
+summary(df[, c("cnt","weathersit","temp","hum","windspeed","cnt")])
+df$weathersit <- factor(df$weathersit)
+levels(df$weathersit)
+fit <- lm(cnt ~ weathersit * (temp + hum + windspeed), data = df)
+summary(fit)
+
+temp_norm <- 25/41
+hum_norm  <- 0.5
+wind_norm <- 5/67
+new <- data.frame(
+  weathersit = factor("1", levels = levels(df$weathersit)),
+  temp = temp_norm,
+  hum = hum_norm,
+  windspeed = wind_norm
+)
+new
+pred_cnt <- predict(fit, new)
+answer_3dp <- round(pred_cnt, 3)
+pred_cnt
+answer_3dp
+```
+
+```{r}
+df <- read.csv("~/Downloads/bikeshare (3).csv")
+str(df[, c("cnt","weathersit","temp","hum","windspeed")])
+summary(df[, c("cnt","weathersit","temp","hum","windspeed","cnt")])
+df$weathersit <- factor(df$weathersit)
+levels(df$weathersit)
+df$log_cnt <- log(df$cnt)
+summary(df$log_cnt)
+fit <- lm(log_cnt ~ weathersit * (temp + hum + windspeed), data = df)
+summary(fit)
+
+temp_norm <- 25/41
+hum_norm  <- 0.5
+wind_norm <- 5/67
+new <- data.frame(
+  weathersit = factor("1", levels = levels(df$weathersit)),  # Clear
+  temp = temp_norm,
+  hum = hum_norm,
+  windspeed = wind_norm
+)
+new
+
+log_hat <- predict(fit, new)
+cnt_hat <- exp(log_hat)
+answer_3dp <- round(cnt_hat, 3)
+
+log_hat
+cnt_hat
+answer_3dp
+```
+
+```{r}
+df <- read.csv("~/Downloads/bikeshare (3).csv")
+str(df[, c("cnt","weathersit","temp","hum","windspeed")])
+df$busy <- as.integer(df$cnt > 7000)
+df$weathersit <- factor(df$weathersit)
+levels(df$weathersit)
+fit <- glm(busy ~ weathersit * (temp + hum + windspeed),
+           data = df, family = binomial)
+summary(fit)
+
+b_temp_clear <- coef(fit)["temp"]
+delta_temp_norm <- 10/41
+odds_ratio <- exp(b_temp_clear * delta_temp_norm)
+answer_2dp <- round(odds_ratio, 2)
+b_temp_clear
+delta_temp_norm
+answer_2dp
+```
+
+```{r}
+df <- read.csv("~/Downloads/bikeshare (3).csv")
+str(df[, c("cnt","weathersit","temp","hum","windspeed")])
+df$busy <- as.integer(df$cnt > 7000)
+df$weathersit <- factor(df$weathersit)
+levels(df$weathersit)
+fit <- glm(
+  busy ~ weathersit * (temp + hum + windspeed),
+  data = df, family = binomial
+)
+summary(fit)
+
+coefs <- coef(fit)
+
+b_temp_base <- coefs[["temp"]]
+b_temp_ws2  <- unname(coefs[grep("weathersit2:temp|temp:weathersit2", names(coefs))])
+b_temp_cloudy <- b_temp_base + b_temp_ws2
+delta_temp_norm <- 10/41
+odds_ratio <- exp(b_temp_cloudy * delta_temp_norm)
+answer_2dp <- round(odds_ratio, 2)
+b_temp_base
+b_temp_ws2
+b_temp_cloudy
+delta_temp_norm
+answer_2dp
+```
+
+```{r}
+df <- read.csv("~/Downloads/bikeshare (3).csv")
+str(df[, c("cnt","weathersit","temp","hum","windspeed")])
+df$busy <- as.integer(df$cnt > 7000)
+df$weathersit <- factor(df$weathersit)
+levels(df$weathersit)
+fit <- glm(
+  busy ~ weathersit * (temp + hum + windspeed),
+  data = df, family = binomial
+)
+summary(fit)
+
+coefs <- coef(fit)
+
+b_temp_base <- coefs[["temp"]]
+b_temp_ws3  <- unname(coefs[grep("weathersit3:temp|temp:weathersit3", names(coefs))])
+b_temp_wet <- b_temp_base + b_temp_ws3
+delta_temp_norm <- 10/41
+odds_ratio_wet <- exp(b_temp_wet * delta_temp_norm)
+answer_2dp <- round(odds_ratio_wet, 2)
+b_temp_base
+b_temp_ws3
+b_temp_wet
+delta_temp_norm
+answer_2dp
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
